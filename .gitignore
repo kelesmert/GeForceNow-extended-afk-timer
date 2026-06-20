@@ -1,0 +1,5 @@
+*
+!.gitignore
+!gfn.cs
+!gfn.csproj
+!LICENSE
