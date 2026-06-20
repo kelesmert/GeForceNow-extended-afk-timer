@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish Windows x64
+        run: dotnet publish gfn.csproj -c Release -o publish
+
+      - name: Prepare release asset
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          Move-Item .\publish\afk-timer.exe .\dist\afk-timer-win-x64.exe -Force
+          @"
+          Windows x64 self-contained build generated automatically by GitHub Actions.
+          No .NET installation is required.
+
+          Source commit: $env:GITHUB_SHA
+          Actions run: $env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID
+          "@ | Set-Content .\dist\RELEASE_NOTES.md -Encoding utf8
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: afk-timer-win-x64
+          path: dist/afk-timer-win-x64.exe
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create $env:GITHUB_REF_NAME `
+            .\dist\afk-timer-win-x64.exe `
+            --repo $env:GITHUB_REPOSITORY `
+            --title $env:GITHUB_REF_NAME `
+            --notes-file .\dist\RELEASE_NOTES.md
