@@ -3,3 +3,7 @@
 !gfn.cs
 !gfn.csproj
 !LICENSE
+!README.md
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
