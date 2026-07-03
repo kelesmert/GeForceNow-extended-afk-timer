@@ -4,6 +4,10 @@ A small Windows utility that keeps a visible GeForce NOW window active by period
 
 This project is open source and unofficial. It is not affiliated with NVIDIA or GeForce NOW.
 
+## Important
+
+Since the last GFN update(2.0.86.124) it hasn't been possible to use the app, working on solutions.
+
 ## How It Works
 
 - Finds a visible GeForce NOW window by process name or window title.
